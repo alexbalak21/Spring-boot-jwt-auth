@@ -72,4 +72,8 @@ public class User {
     public void setUid(UUID uid) {
         this.uid = uid;
     }
+
+    public UUID getUid() {
+        return uid;
+    }
 }
