@@ -1,13 +1,13 @@
-package app.spring_boot_jwt_auth;
+package app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpringBootJwtAuthApplication {
+public class Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringBootJwtAuthApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
 }
