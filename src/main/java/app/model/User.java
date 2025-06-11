@@ -26,7 +26,7 @@ public class User {
     private UUID uid;
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
-    private boolean AccountLocked;
+    private boolean accountLocked;
 
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")
@@ -66,7 +66,7 @@ public class User {
     }
 
     public void setAccountLocked(boolean accountLocked) {
-        AccountLocked = accountLocked;
+        this.accountLocked = accountLocked;
     }
 
     public void setUid(UUID uid) {

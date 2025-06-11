@@ -20,6 +20,17 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // Create User
+    public void createUser(String email, String password) {
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setAccountLocked(false);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setUid(UUID.randomUUID());
+        userRepository.save(user);
+    }
+
     // Read All Users (Returns DTOs with only id and username)
     public List<UserDTO> getAllUsers() {
         return userRepository.findAllUsers();
@@ -53,15 +64,5 @@ public class UserService {
         } else {
             throw new RuntimeException("User not found");
         }
-    }
-
-    public void createUser(String email, String password) {
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(password);
-        user.setAccountLocked(false);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setUid(UUID.randomUUID());
-        user = userRepository.save(user);
     }
 }

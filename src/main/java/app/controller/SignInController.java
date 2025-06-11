@@ -5,6 +5,7 @@ import app.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/signup")
 public class SignInController {
@@ -18,6 +19,6 @@ public class SignInController {
     @PostMapping
     public ResponseEntity<String> signup(@RequestBody UserRequestDTO request) {
         userService.createUser(request.getEmail(), request.getPassword());
-        return ResponseEntity.ok("User created successfully!");
+        return ResponseEntity.ok("{\"message\": \"User created successfully\"}");
     }
 }
