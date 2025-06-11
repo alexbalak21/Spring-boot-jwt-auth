@@ -1,5 +1,9 @@
 package app.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
@@ -63,5 +67,21 @@ public class Jwt {
         } catch (Exception e) {
             throw new RuntimeException("Error signing JWT", e);
         }
+    }
+
+    public static String getEmailFromToken(String token) throws JsonProcessingException {
+        String jsonPayload = getPayload(token);
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(jsonPayload);
+        return jsonNode.get("email").asText();
+    }
+
+    public static String getUidFromToken(String token) throws JsonProcessingException {
+        String jsonPayload = getPayload(token);
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(jsonPayload);
+        return jsonNode.get("uid").asText();
+
+
     }
 }
