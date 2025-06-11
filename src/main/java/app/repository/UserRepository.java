@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUsername(String username); // Returns a single user wrapped in Optional
+    Optional<User> findByEmail(String email); // Returns a single user wrapped in Optional
 
-    @Query("SELECT new app.dto.UserDTO(u.id, u.username) FROM User u")
+    @Query("SELECT new app.dto.UserDTO(u.id, u.email, u.accountLocked, u.createdAt, u.updatedAt) FROM User u")
     List<UserDTO> findAllUsers(); // Custom query to return DTOs
 }

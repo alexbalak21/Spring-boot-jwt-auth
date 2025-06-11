@@ -1,13 +1,23 @@
 package app.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import app.dto.UserRequestDTO;
+import app.service.UserService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@RestController("/signup")
+@RestController
+@RequestMapping("/signup")
 public class SignInController {
 
+    private final UserService userService;
+
+    public SignInController(UserService userService) {
+        this.userService = userService;
+    }
+
     @PostMapping
-    String signup() {
-        return "signup";
+    public ResponseEntity<String> signup(@RequestBody UserRequestDTO request) {
+        userService.createUser(request.getEmail(), request.getPassword());
+        return ResponseEntity.ok("User created successfully!");
     }
 }

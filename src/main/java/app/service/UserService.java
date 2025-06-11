@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -19,20 +20,14 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Create User
-    public User createUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // Encrypt password before saving
-        return userRepository.save(user);
-    }
-
     // Read All Users (Returns DTOs with only id and username)
     public List<UserDTO> getAllUsers() {
         return userRepository.findAllUsers();
     }
 
-    // Read User By Username
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+    // Read User By Email
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     // Read User By ID
@@ -58,5 +53,15 @@ public class UserService {
         } else {
             throw new RuntimeException("User not found");
         }
+    }
+
+    public void createUser(String email, String password) {
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setAccountLocked(false);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setUid(UUID.randomUUID());
+        user = userRepository.save(user);
     }
 }

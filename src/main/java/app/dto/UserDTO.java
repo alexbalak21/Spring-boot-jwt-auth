@@ -10,12 +10,12 @@ public class UserDTO {
     private final Date updatedAt;
 
 
-    public UserDTO(Long id, String email, boolean accountLocked, Date createdAt) {
+    public UserDTO(Long id, String email, boolean accountLocked, Date createdAt, Date updatedAt) {
         this.id = id;
         this.email = email;
         this.accountLocked = accountLocked;
         this.createdAt = createdAt;
-        this.updatedAt = new Date();
+        this.updatedAt = updatedAt;
     }
 
 

@@ -68,4 +68,8 @@ public class User {
     public void setAccountLocked(boolean accountLocked) {
         AccountLocked = accountLocked;
     }
+
+    public void setUid(UUID uid) {
+        this.uid = uid;
+    }
 }
