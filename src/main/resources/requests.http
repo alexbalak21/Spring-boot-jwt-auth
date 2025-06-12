@@ -19,7 +19,7 @@ Content-Type: application/json
 ### GET USER PROFILE
 GET http://localhost:8080/user/me
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAZW1haWwuY29tIiwidWlkIjoiM2VmNGFhM2UtMTZlYS00MGY4LTg2NDEtNjg1OWU0OTI0ZjRiIiwicm9sZSI6IlZJU0lUT1IiLCJleHAiOjE3NDk4MTI2OTF9.jSXN5HXtRNbPJfj0HRzbhnRMN5o4JY82Jyn6F6Y5GxE
 
 {
 }
