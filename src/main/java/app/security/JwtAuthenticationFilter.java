@@ -1,5 +1,6 @@
 package app.security;
 
+import app.dto.UserDetailsDTO;
 import app.model.User;
 import app.repository.UserRepository;
 import app.utils.Jwt;
@@ -48,8 +49,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         User user = userRepository.findByEmail(email).orElse(null);
 
         if (user != null) {
-            UserDetails userDetails = new User(user.getEmail(), user.getPassword(), user.getRoles());
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            UserDetailsDTO userDetailsDTO = new UserDetailsDTO(user.getEmail(), user.getPassword(), user.getRole()) {
+            };
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetailsDTO, null, userDetails.getAuthorities());
             auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             SecurityContextHolder.getContext().setAuthentication(auth); // Set user in the security context

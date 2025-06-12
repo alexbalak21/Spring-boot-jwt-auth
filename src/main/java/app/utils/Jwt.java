@@ -1,12 +1,10 @@
 package app.utils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import app.dto.UserDetailsDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -15,26 +13,24 @@ public class Jwt {
     private static final String HMAC_SHA256 = "HmacSHA256";
     private static final int EXPIRATION_TIME = 86400; // 24h
 
-    // Generate JWT Token with multiple payload fields
-    public static String generateToken(Map<String, Object> payloadData) {
-        String header = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
+    // Generate JWT Token using UserDetailsDTO
+    public static String generateToken(UserDetailsDTO userDetails) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String payload = objectMapper.writeValueAsString(userDetails);
 
-        StringBuilder payloadBuilder = new StringBuilder("{");
-        payloadData.forEach((key, value) -> {
-            payloadBuilder.append("\"").append(key).append("\":");
-            if (value instanceof Number) {
-                payloadBuilder.append(value).append(",");
-            } else {
-                payloadBuilder.append("\"").append(value).append("\",");
-            }
-        });
-        payloadBuilder.append("\"exp\":").append(System.currentTimeMillis() / 1000 + EXPIRATION_TIME).append("}");
+            // Add expiration time
+            String finalPayload = payload.substring(0, payload.length() - 1) +
+                    ",\"exp\":" + (System.currentTimeMillis() / 1000 + EXPIRATION_TIME) + "}";
 
-        String encodedHeader = base64UrlEncode(header.getBytes(StandardCharsets.UTF_8));
-        String encodedPayload = base64UrlEncode(payloadBuilder.toString().getBytes(StandardCharsets.UTF_8));
+            String encodedHeader = base64UrlEncode("{\"alg\":\"HS256\",\"typ\":\"JWT\"}".getBytes());
+            String encodedPayload = base64UrlEncode(finalPayload.getBytes());
 
-        String signature = hmacSha256(encodedHeader + "." + encodedPayload);
-        return encodedHeader + "." + encodedPayload + "." + signature;
+            String signature = hmacSha256(encodedHeader + "." + encodedPayload);
+            return encodedHeader + "." + encodedPayload + "." + signature;
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating token", e);
+        }
     }
 
     // Validate Token
@@ -54,14 +50,25 @@ public class Jwt {
         return new String(Base64.getUrlDecoder().decode(parts[1]), StandardCharsets.UTF_8);
     }
 
+    // Extract UserDetailsDTO from Token
+    public static UserDetailsDTO getUserDetailsFromToken(String token) {
+        try {
+            String payload = getPayload(token);
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.readValue(payload, UserDetailsDTO.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing token", e);
+        }
+    }
+
     private static String base64UrlEncode(byte[] input) {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(input);
     }
 
     private static String hmacSha256(String data) {
         try {
-            Mac sha256Hmac = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secretKey = new SecretKeySpec(Jwt.SECRET_KEY.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            Mac sha256Hmac = Mac.getInstance(HMAC_SHA256);
+            SecretKeySpec secretKey = new SecretKeySpec(SECRET_KEY.getBytes(StandardCharsets.UTF_8), HMAC_SHA256);
             sha256Hmac.init(secretKey);
             return base64UrlEncode(sha256Hmac.doFinal(data.getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e) {
@@ -69,19 +76,14 @@ public class Jwt {
         }
     }
 
-    public static String getEmailFromToken(String token) throws JsonProcessingException {
-        String jsonPayload = getPayload(token);
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(jsonPayload);
-        return jsonNode.get("email").asText();
-    }
-
-    public static String getUidFromToken(String token) throws JsonProcessingException {
-        String jsonPayload = getPayload(token);
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(jsonPayload);
-        return jsonNode.get("uid").asText();
-
-
+    public static String getEmailFromToken(String token) {
+        try {
+            String payload = getPayload(token);
+            ObjectMapper objectMapper = new ObjectMapper();
+            UserDetailsDTO userDetails = objectMapper.readValue(payload, UserDetailsDTO.class);
+            return userDetails.getEmail();
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing token", e);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.dto.UserDetailsDTO;
 import app.dto.UserRequestDTO;
 import app.enums.AuthResult;
 import app.model.User;
@@ -32,7 +33,8 @@ public class LoginController {
             User user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
             UUID uid = user.getUid();
-            String token = Jwt.generateToken(Map.of("email", request.getEmail(), "uid", uid.toString()));
+            UserDetailsDTO userDetailsDTO = new UserDetailsDTO(user.getEmail(), uid.toString(), user.getRole());
+            String token = Jwt.generateToken(userDetailsDTO);
 
             return ResponseEntity.ok(Map.of("message", "Login successful", "accessToken", token));
         }

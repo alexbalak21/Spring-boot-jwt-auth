@@ -36,18 +36,23 @@ public class User {
     @Column(name = "updated_at")
     private Date updatedAt;
 
-    public User(){}
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role;
 
-    public User(Long id, String email, String password) {
+    public User() {}
+
+    public User(Long id, String email, String password, UserRole role) {
         this.id = id;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }
-
 
     public String getEmail() {
         return email;
@@ -69,11 +74,19 @@ public class User {
         this.accountLocked = accountLocked;
     }
 
+    public UUID getUid() {
+        return uid;
+    }
+
     public void setUid(UUID uid) {
         this.uid = uid;
     }
 
-    public UUID getUid() {
-        return uid;
+    public String getRole() {
+        return role.name();
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 }
