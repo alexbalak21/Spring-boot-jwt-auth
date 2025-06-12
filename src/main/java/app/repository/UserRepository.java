@@ -13,6 +13,6 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email); // Returns a single user wrapped in Optional
 
-    @Query("SELECT new app.dto.UserDTO(u.id, u.email, u.accountLocked, u.createdAt, u.updatedAt) FROM User u")
-    List<UserDTO> findAllUsers(); // Custom query to return DTOs
+    @Query("SELECT new app.dto.UserDTO(u.id, u.email, u.accountLocked, u.createdAt, u.updatedAt, CAST(u.role AS string)) FROM User u")
+    List<UserDTO> findAllUsers();
 }
