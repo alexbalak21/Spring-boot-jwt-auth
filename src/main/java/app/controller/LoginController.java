@@ -33,7 +33,7 @@ public class LoginController {
             User user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
             UUID uid = user.getUid();
-            UserDetailsDTO userDetailsDTO = new UserDetailsDTO(user.getEmail(), uid.toString(), user.getRole());
+            UserDetailsDTO userDetailsDTO = new UserDetailsDTO(user.getEmail(), uid.toString(), user.getRole().name());
             String token = Jwt.generateToken(userDetailsDTO);
 
             return ResponseEntity.ok(Map.of("message", "Login successful", "accessToken", token));

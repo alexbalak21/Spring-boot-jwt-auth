@@ -2,6 +2,7 @@ package app.service;
 
 import app.dto.UserDTO;
 import app.model.User;
+import app.model.UserRole;
 import app.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class UserService {
         user.setAccountLocked(false);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setUid(UUID.randomUUID());
+        user.setRole(UserRole.VISITOR);
         userRepository.save(user);
     }
 

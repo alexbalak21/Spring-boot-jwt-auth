@@ -37,7 +37,7 @@ public class User {
     private Date updatedAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'VISITOR'")
     private UserRole role;
 
     public User() {}
@@ -82,8 +82,8 @@ public class User {
         this.uid = uid;
     }
 
-    public String getRole() {
-        return role.name();
+    public UserRole getRole() {
+        return role;
     }
 
     public void setRole(UserRole role) {
