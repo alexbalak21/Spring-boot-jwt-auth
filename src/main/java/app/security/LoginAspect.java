@@ -1,5 +1,8 @@
 package app.security;
 
+import app.dto.UserDetailsDTO;
+import app.model.User;
+import app.repository.UserRepository;
 import app.utils.Jwt;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.annotation.Aspect;
@@ -14,29 +17,53 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Component
 public class LoginAspect {
 
+    private final UserRepository userRepository;
+    private static final ThreadLocal<UserDetailsDTO> currentUser = new ThreadLocal<>();
+
+    public LoginAspect(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     @Before("@annotation(app.security.LoginRequired)")
     public void checkAuthentication() {
+        String token = getToken();
+        if (!Jwt.validateToken(token)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid JWT token");
+        }
 
+        // Extract user details from the JWT token
+        UserDetailsDTO userDetails = Jwt.getUserDetailsFromToken(token);
 
-        // Retrieve the current HTTP request
+        // Retrieve user from the database and check status
+        User user = userRepository.findByEmail(userDetails.getEmail()).orElse(null);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User does not exist");
+        }
+
+        if (!user.isActive()) { // Assuming you have an `isActive()` method in User
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not active");
+        }
+
+        currentUser.set(userDetails); // Store the authenticated user
+    }
+
+    private static String getToken() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes == null) {
-
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Request not available");
         }
 
         HttpServletRequest request = attributes.getRequest();
         String authHeader = request.getHeader("Authorization");
 
-
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid Authorization header");
         }
 
-        // Extract and decode the JWT token
-        String token = authHeader.substring(7);
-        if (!Jwt.validateToken(token)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid JWT token");
-        }
+        return authHeader.substring(7);
+    }
+
+    public static UserDetailsDTO getAuthenticatedUser() {
+        return currentUser.get();
     }
 }

@@ -1,29 +1,23 @@
 package app.controller;
 
 import app.dto.UserDetailsDTO;
+import app.security.LoginAspect;
 import app.security.LoginRequired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user") // This correctly sets the base path
+@RequestMapping("/user")
 public class UserController {
-
-    @GetMapping("/home")
-    public String user() {
-        return "user page"; // Now accessible at GET /user/
-    }
 
     @LoginRequired
     @GetMapping("/me")
-    public String getUser() {
-        return "me";
-        //return (UserDetailsDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
+    public UserDetailsDTO getUser() {
+        UserDetailsDTO userDetails = LoginAspect.getAuthenticatedUser();
 
-    @PostMapping("/token")
-    public String token(@RequestBody String token) {
-        return "Decode token";
+        if (userDetails == null) {
+            throw new RuntimeException("User details not found");
+        }
+
+        return userDetails;
     }
 }
-

@@ -89,4 +89,8 @@ public class User {
     public void setRole(UserRole role) {
         this.role = role;
     }
+
+    public boolean isActive() {
+        return !accountLocked;
+    }
 }
