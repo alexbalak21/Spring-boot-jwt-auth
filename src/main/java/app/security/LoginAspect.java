@@ -16,7 +16,7 @@ public class LoginAspect {
     @Before("@annotation(app.security.LoginRequired)")
     public void checkAuthentication(JoinPoint joinPoint) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+        System.out.println("principal: " + principal);
         if (!(principal instanceof UserDetailsDTO)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "{\"message\":\"Unauthorized\", \"warning\": Login required}");
 
